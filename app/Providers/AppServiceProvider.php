@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-
+use App\Services\DdexService;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -11,7 +11,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(DdexService::class, function ($app) {
+            return new DdexService();
+        });
     }
 
     /**
