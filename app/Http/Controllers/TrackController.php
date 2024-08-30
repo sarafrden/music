@@ -13,15 +13,19 @@ class TrackController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'title' => 'required|string|max:255',
             'album_id' => 'required|exists:albums,id',
             'artist_id' => 'required|exists:artists,id',
             'duration' => 'required|integer',
-            'audio_url' => 'nullable|string'
+            'type_id' => 'required|exists:types,id',
+            'audio_url' => 'required|mimes:mp3,wav,ogg|max:100240',
         ]);
-
-        $track = Track::create($request->all());
+        if ($request->hasFile('audio_url')) {
+            $audio_url = $request->file('audio_url')->store('audio_files/Tracks', 'public');
+            $data['audio_url'] = $audio_url;
+        }
+        $track = Track::create($data);
 
         return response()->json($track, 201);
     }
@@ -33,13 +37,17 @@ class TrackController extends Controller
 
     public function update(Request $request, Track $track)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'duration' => 'required|integer',
-            'audio_url' => 'nullable|string'
+        $data = $request->validate([
+            'title' => 'nullable|string|max:255',
+            'duration' => 'nullable|integer',
+            'audio_url' => 'nullable|mimes:mp3,wav,ogg|max:100240', // max 10MB,
+            'type_id' => 'nullable|exists:types,id',
         ]);
-
-        $track->update($request->all());
+        if ($request->hasFile('audio_url')) {
+            $audio_url = $request->file('audio_url')->store('audio_files/Tracks', 'public');
+            $data['audio_url'] = $audio_url;
+        }
+        $track->update($data);
 
         return response()->json($track, 200);
     }
@@ -50,4 +58,5 @@ class TrackController extends Controller
 
         return response()->json(null, 204);
     }
+
 }

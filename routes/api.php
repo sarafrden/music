@@ -12,6 +12,7 @@ use App\Http\Controllers\DdexController;
 use App\Http\Controllers\StreamingAnalyticsController;
 use App\Http\Controllers\DistributionChannelController;
 use App\Http\Controllers\TrackDistributionController;
+use App\Http\Controllers\TypeController;
 
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
@@ -22,13 +23,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('artists', ArtistController::class);
     Route::apiResource('albums', AlbumController::class);
-    Route::apiResource('tracks', TrackController::class);
+    Route::apiResource('albums', AlbumController::class);
     Route::apiResource('royalties', RoyaltyController::class);
     Route::apiResource('ddex', DdexController::class);
     Route::apiResource('streaming-analytics', StreamingAnalyticsController::class);
     Route::apiResource('distribution-channels', DistributionChannelController::class);
     Route::apiResource('track-distributions', TrackDistributionController::class);
 });
+Route::apiResource('types', TypeController::class);
 
 
 Route::get('/user', function (Request $request) {

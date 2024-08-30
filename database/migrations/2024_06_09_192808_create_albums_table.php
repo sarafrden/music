@@ -14,9 +14,16 @@ return new class extends Migration
         Schema::create('albums', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('sub_title')->nullable();
+            $table->string('featuring')->nullable();
+            $table->string('genre')->nullable();
+            $table->string('sub_genre')->nullable();
+            $table->string('label');
+            $table->string('format');
             $table->foreignId('artist_id')->constrained()->onDelete('cascade');
             $table->date('release_date')->nullable();
             $table->string('cover_url')->nullable();
+            $table->boolean('is_compilation')->default(false);
             $table->timestamps();
         });
     }

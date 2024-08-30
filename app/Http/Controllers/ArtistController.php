@@ -13,15 +13,19 @@ class ArtistController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'user_id' => 'required|exists:users,id',
             'stage_name' => 'required|string|max:255',
             'bio' => 'nullable|string',
             'genre' => 'nullable|string',
-            'image_url' => 'nullable|string'
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
+        if ($request->hasFile('image_url')) {
+            $image = $request->file('image_url')->store('images/artists', 'public');
+            $data['image_url'] = $image;
+        }
 
-        $artist = Artist::create($request->all());
+        $artist = Artist::create($data);
 
         return response()->json($artist, 201);
     }
@@ -33,14 +37,18 @@ class ArtistController extends Controller
 
     public function update(Request $request, Artist $artist)
     {
-        $request->validate([
+        $data = $request->validate([
             'stage_name' => 'sometimes|string|max:255',
-            'bio' => 'sometimes|string',
+            'bio' => 'sometimes|string', 
             'genre' => 'sometimes|string',
-            'image_url' => 'sometimes|string'
+            'image_url' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
-        $artist->update($request->all());
+        if ($request->hasFile('image_url')) {
+            $image = $request->file('image_url')->store('images/artists', 'public');
+            $data['image_url'] = $image;
+        }
+        $artist->update($data);
 
         return response()->json($artist, 200);
     }

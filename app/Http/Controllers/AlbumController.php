@@ -13,14 +13,28 @@ class AlbumController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'title' => 'required|string|max:255',
+            'sub_title' => 'nullable|string|max:255',
+            'featuring' => 'nullable|string|max:255',
+            'genre' => 'nullable|string|max:255',
+            'sub_genre' => 'nullable|string|max:255',
+            'label' => 'nullable|string|max:255',
+            'format' => 'nullable|string|max:255',
             'artist_id' => 'required|exists:artists,id',
             'release_date' => 'nullable|date',
-            'cover_url' => 'nullable|string'
+            'is_compilation' => 'nullable',
+            'cover_url' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
-        $album = Album::create($request->all());
+        if ($request->hasFile('cover_url')) {
+            $image = $request->file('cover_url')->store('images/albums', 'public');
+            $data['cover_url'] = $image;
+        }
+
+
+
+        $album = Album::create($data);
 
         return response()->json($album, 201);
     }
@@ -32,13 +46,24 @@ class AlbumController extends Controller
 
     public function update(Request $request, Album $album)
     {
-        $request->validate([
+        $data = $request->validate([
             'title' => 'sometimes|string|max:255',
             'release_date' => 'sometimes|date',
-            'cover_url' => 'sometimes|string'
+            'sub_title' => 'nullable|string|max:255',
+            'featuring' => 'nullable|string|max:255',
+            'genre' => 'nullable|string|max:255',
+            'sub_genre' => 'nullable|string|max:255',
+            'label' => 'nullable|string|max:255',
+            'format' => 'nullable|string|max:255',
+            'is_compilation' => 'nullable',
+            'cover_url' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
-        $album->update($request->all());
+        if ($request->hasFile('cover_url')) {
+            $image = $request->file('cover_url')->store('images/albums', 'public');
+            $data['cover_url'] = $image;
+        }
+        $album->update($data);
 
         return response()->json($album, 200);
     }
